@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+dynamic = ["dependencies"]
+name = "variatio"
+version = "0.0.0"
+
+requires-python = ">=3.8"
+authors = [
+    { name = "Dmitry Brazhenko", email = "brazhenko.dmitry@gmail.com" },
+]
+maintainers = [
+    { name = "Dmitry Brazhenko", email = "brazhenko.dmitry@gmail.com" }
+]
+description = "An experimental Python library for advanced A/B testing analysis, leveraging statistical techniques and ML for deeper insights."
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = []
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.urls]
+Homepage = "https://github.com/dmitry-brazhenko/variatio"
+Documentation = "https://github.com/dmitry-brazhenko/Variatio/blob/main/README.md"
+Repository = "https://github.com/dmitry-brazhenko/variatio"

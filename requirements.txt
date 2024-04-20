@@ -1,0 +1,4 @@
+scikit-learn>=1.2.0
+catboost>=1.2.3
+pandas>=1.4.0
+scipy>=1.10.0

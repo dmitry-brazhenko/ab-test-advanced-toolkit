@@ -4,9 +4,14 @@ from typing import List, Union, Optional
 import numpy as np
 from catboost import CatBoostRegressor
 from scipy import stats
+from sklearn.compose import ColumnTransformer
+from sklearn.dummy import DummyRegressor
 from sklearn.linear_model import LinearRegression
 
 import pandas as pd
+from sklearn.pipeline import Pipeline
+from category_encoders import TargetEncoder
+from xgboost import XGBRegressor
 
 
 class StatSignificanceMethod(Enum):
@@ -126,6 +131,7 @@ class StatTests:
         :return:
         """
         # Ensure `value_column` is defined to match your actual data structure
+        print("QQQQQ")
         value_column = merged_intest.columns[-1]  # Assuming last column is the metric of interest
 
         # Prepare merged dataset with user properties if available
@@ -143,10 +149,22 @@ class StatTests:
 
         X_control, categorical_features = prepare_dataset(control_pretest_data, user_properties)
 
-        model: Union[CatBoostRegressor, ZeroPredictor] = CatBoostRegressor(cat_features=categorical_features,
-                                                                           verbose=False)
+        preprocessor = ColumnTransformer(
+            transformers=[
+                ('cat', TargetEncoder(smoothing=0.8), categorical_features)
+            ],
+            remainder='passthrough'
+        )
+
+        # Embed the preprocessing step into a pipeline with XGBRegressor
+        model: Union[XGBRegressor, ZeroPredictor] = Pipeline(steps=[
+            ('preprocessor', preprocessor),
+            ('regressor', XGBRegressor(verbosity=0))
+        ])
+
         try:
             model.fit(X_control, merged_intest[merged_intest['abgroup'] == control_group][value_column])
+            print("model was fit")
         except Exception as e:
             print(e)
             # this case is equivalent o regular T-test

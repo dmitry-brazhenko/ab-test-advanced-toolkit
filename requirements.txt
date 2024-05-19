@@ -4,3 +4,4 @@ pandas>=1.4.0
 scipy>=1.10.0
 xgboost
 category_encoders
+pytest

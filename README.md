@@ -168,4 +168,11 @@ Variatio is licensed under the MIT License. See [LICENSE](LICENSE) for more deta
 ## Disclaimer
 
 Variatio is shared with the community as an experimental library, offered "as-is" and without any warranties. Your explorations and tests with it are encouraged, but please proceed with awareness of its experimental nature. We're keen to hear about your experiences and eager to tackle any challenges you encounter. Should you have questions or face any issues, don't hesitate to open an issue in our repository. We welcome your feedback and contributions to make Variatio even better!# tmp_abtest_lib
+
 # tmp_abtest_lib
+
+# Tests
+
+```bash
+pytest
+```

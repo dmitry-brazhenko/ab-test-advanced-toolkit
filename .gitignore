@@ -162,3 +162,7 @@ cython_debug/
 /results.html
 /tests/catboost_info/
 /examples/catboost_info/
+
+# Ignore all files and folders in data. Except the placeholder file.
+data/*
+!data/.placeholder

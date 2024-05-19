@@ -2,7 +2,6 @@ from enum import Enum, auto
 from typing import List, Union, Optional
 
 import numpy as np
-from catboost import CatBoostRegressor
 from scipy import stats
 from sklearn.compose import ColumnTransformer
 from sklearn.dummy import DummyRegressor
@@ -18,7 +17,7 @@ class StatSignificanceMethod(Enum):
     CHI_SQUARE = auto()
     T_TEST = auto()
     PURE_CUPED_T_TEST = auto()
-    CATBOOST_CUPED_T_TEST = auto()
+    GBOOST_CUPED_T_TEST = auto()
 
 
 class StatSignificanceResult:
@@ -120,7 +119,7 @@ class StatTests:
         return StatSignificanceResult(StatSignificanceMethod.PURE_CUPED_T_TEST, p_values)
 
     @staticmethod
-    def calculate_catboost_cuped_and_compare(merged_pretest: pd.DataFrame, merged_intest: pd.DataFrame,
+    def calculate_gboost_cuped_and_compare(merged_pretest: pd.DataFrame, merged_intest: pd.DataFrame,
                                              user_properties: Optional[pd.DataFrame], control_group: str,
                                              test_groups: List[str], use_enhansement: bool = False) -> StatSignificanceResult:
         """
@@ -205,4 +204,4 @@ class StatTests:
                 test_group_names.append(test_group)
 
         # Assuming StatSignificanceResult is a structure you've defined to store the results
-        return StatSignificanceResult(StatSignificanceMethod.CATBOOST_CUPED_T_TEST, p_values)
+        return StatSignificanceResult(StatSignificanceMethod.GBOOST_CUPED_T_TEST, p_values)

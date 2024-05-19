@@ -10,17 +10,17 @@ from variatio.vizualizer import format_metrics_to_html
 
 class VariatioAnalyzer:
     def __init__(self, event_data: pd.DataFrame, ab_test_allocations: pd.DataFrame, control_group_name: str,
-                 user_properties: Optional[pd.DataFrame] = None, mode="catboost_cuped"):
+                 user_properties: Optional[pd.DataFrame] = None, mode="gboost_cuped"):
         """
         Initializes the VariatioAnalyzer with event data, AB test allocations, control group name, user properties, and mode.
         :param event_data: DataFrame containing event data. Expected pandas format: |timestamp|userid|event_name|attribute_1|attribute_2|...
         :param ab_test_allocations: DataFrame containing AB test allocations. Expected pandas format: |timestamp|userid|abgroup|
         :param control_group_name: The name of the control group.
         :param user_properties: DataFrame containing user properties. Expected pandas format: |userid|property_1|property_2|...
-        :param mode: Mode of enhancement ("no_enhancement", "cuped", "catboost_cuped").
+        :param mode: Mode of enhancement ("no_enhancement", "cuped", "gboost_cuped").
         """
 
-        assert mode in ["no_enhancement", "cuped", "catboost_cuped"], "Invalid mode"
+        assert mode in ["no_enhancement", "cuped", "gboost_cuped"], "Invalid mode"
 
         self.control_group_name = control_group_name
         self.test_group_names = [group for group in ab_test_allocations['abgroup'].unique() if
@@ -94,7 +94,7 @@ class VariatioAnalyzer:
 
         merged_intest, result_intest = self._merge_and_aggregate(self.event_data, self.ab_test_allocations, event_name,
                                                                  AggregationOperation.COUNT)
-        stat_test = StatTests.calculate_catboost_cuped_and_compare(merged_pretest, merged_intest, self.user_properties,
+        stat_test = StatTests.calculate_gboost_cuped_and_compare(merged_pretest, merged_intest, self.user_properties,
                                                                    self.control_group_name, self.test_group_names)
 
         self.calculated_metrics.append(Metric(MetricType.EVENT_COUNT_PER_USER, MetricParams(event_name),
@@ -121,14 +121,14 @@ class VariatioAnalyzer:
         merged_intest, result_intest = self._merge_and_aggregate(self.event_data, self.ab_test_allocations, event_name,
                                                                 AggregationOperation.SUM, attribute_name)
 
-        if self.mode == "catboost_cuped":
-            stat_test = StatTests.calculate_catboost_cuped_and_compare(merged_pretest, merged_intest, self.user_properties,
+        if self.mode == "gboost_cuped":
+            stat_test = StatTests.calculate_gboost_cuped_and_compare(merged_pretest, merged_intest, self.user_properties,
                                                                 self.control_group_name, self.test_group_names, True)
         elif self.mode == "cuped":
             stat_test = StatTests.calculate_cuped_and_compare(merged_pretest, merged_intest,
                                                                 self.control_group_name, self.test_group_names)
         else:
-            stat_test = StatTests.calculate_catboost_cuped_and_compare(merged_pretest, merged_intest,
+            stat_test = StatTests.calculate_gboost_cuped_and_compare(merged_pretest, merged_intest,
                                                                     self.user_properties,
                                                                     self.control_group_name, self.test_group_names,
                                                                     False)

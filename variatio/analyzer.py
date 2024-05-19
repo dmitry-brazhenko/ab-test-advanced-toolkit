@@ -98,13 +98,16 @@ class VariatioAnalyzer:
                                                            self.test_group_names, stat_test)))
         return result_intest
 
-    def calculate_event_attribute_sum_per_user(self, event_name: str, attribute_name: str) -> pd.DataFrame:
+    def calculate_event_attribute_sum_per_user(self, event_name: str, attribute_name: str, mode="no_enhancement") -> pd.DataFrame:
         """
         Calculates the sum of a specified attribute per user for the specified event name.
         :param event_name: The event name to calculate the attribute sum for.
         :param attribute_name:  The name of the attribute to calculate the sum for.
         :return: DataFrame with the calculated attribute sum per user per group
         """
+
+        assert mode in ["no_enhancement", "cuped", "catboost_cuped"]
+
         if attribute_name not in self.event_data.columns:
             raise ValueError(f"Attribute {attribute_name} not found in event data.")
         if self.event_data[attribute_name].dtype not in [int, float]:
@@ -112,16 +115,29 @@ class VariatioAnalyzer:
 
         merged_pretest, _ = self._merge_and_aggregate(self.event_data, self.ab_test_allocations, event_name,
                                                       AggregationOperation.SUM, attribute_name, pretest=True)
+        print("merged pretest")
+        print(merged_pretest)
         merged_intest, result_intest = self._merge_and_aggregate(self.event_data, self.ab_test_allocations, event_name,
                                                                  AggregationOperation.SUM, attribute_name)
 
-        stat_test = StatTests.calculate_catboost_cuped_and_compare(merged_pretest, merged_intest, self.user_properties,
+        print("result_intest")
+        print(merged_intest)
+        if mode == "catboost_cuped":
+            stat_test = StatTests.calculate_catboost_cuped_and_compare(merged_pretest, merged_intest, self.user_properties,
+                                                                   self.control_group_name, self.test_group_names, True)
+        elif mode == "cuped":
+            stat_test = StatTests.calculate_cuped_and_compare(merged_pretest, merged_intest,
                                                                    self.control_group_name, self.test_group_names)
+        else:
+            stat_test = StatTests.calculate_catboost_cuped_and_compare(merged_pretest, merged_intest,
+                                                                       self.user_properties,
+                                                                       self.control_group_name, self.test_group_names,
+                                                                       False)
 
         self.calculated_metrics.append(
             Metric(MetricType.EVENT_ATTRIBUTE_SUM_PER_USER, MetricParams(event_name, attribute_name),
                    MetricResult(result_intest, self.control_group_name, self.test_group_names, stat_test)))
-        return result_intest
+        return result_intest, stat_test
 
     def calculate_conversion(self, target_event: str) -> pd.DataFrame:
         """

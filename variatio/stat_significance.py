@@ -90,6 +90,8 @@ class StatTests:
         # Fit linear regression model on control group data
         model = LinearRegression()
         model.fit(control_pretest_values, control_intest_values)
+        print(control_pretest_values, control_intest_values)
+        print(model.coef_)
         adjusted_control_values = control_intest_values - model.predict(control_pretest_values)
 
         # Initialize lists for storing p-values and test group names
@@ -120,7 +122,7 @@ class StatTests:
     @staticmethod
     def calculate_catboost_cuped_and_compare(merged_pretest: pd.DataFrame, merged_intest: pd.DataFrame,
                                              user_properties: Optional[pd.DataFrame], control_group: str,
-                                             test_groups: List[str]) -> StatSignificanceResult:
+                                             test_groups: List[str], use_enhansement: bool = False) -> StatSignificanceResult:
         """
         Calculate the CUPED adjustment and compare the adjusted test group values to the control group using T-tests.
         :param merged_pretest: DataFrame containing the pretest data. Expected pandas format: | userid (index) | abgroup | value_column |
@@ -131,7 +133,6 @@ class StatTests:
         :return:
         """
         # Ensure `value_column` is defined to match your actual data structure
-        print("QQQQQ")
         value_column = merged_intest.columns[-1]  # Assuming last column is the metric of interest
 
         # Prepare merged dataset with user properties if available
@@ -161,13 +162,25 @@ class StatTests:
             ('preprocessor', preprocessor),
             ('regressor', XGBRegressor(verbosity=0))
         ])
+        print("use_enhansement", use_enhansement)
+        if use_enhansement:
+            try:
+                print(X_control)
+                print(merged_intest[merged_intest['abgroup'] == control_group][value_column])
+                x_ = X_control.copy()
+                x_.reset_index(drop=True, inplace=True)
 
-        try:
-            model.fit(X_control, merged_intest[merged_intest['abgroup'] == control_group][value_column])
-            print("model was fit")
-        except Exception as e:
-            print(e)
-            # this case is equivalent o regular T-test
+                y_ = merged_intest[merged_intest['abgroup'] == control_group][value_column].copy()
+                y_.reset_index(drop=True, inplace=True)
+                model.fit(x_, y_)
+                # model.fit(X_control, merged_intest[merged_intest['abgroup'] == control_group][value_column])
+                print("model wast")
+            except Exception as e:
+                print("model was not fit")
+                print(e)
+                # this case is equivalent o regular T-test
+                model = ZeroPredictor()
+        else:
             model = ZeroPredictor()
 
         adjusted_values = {}

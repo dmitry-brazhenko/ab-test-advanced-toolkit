@@ -113,12 +113,18 @@ def create_dataframes(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.
 
 def run_analysis(df: pd.DataFrame):
     event_data, user_allocations, user_properties = create_dataframes(df)
+    
+    # Analysis without enhancement
+    analyzer_no_enhancement = VariatioAnalyzer(event_data, user_allocations, "a1", user_properties, mode="no_enhancement")
+    results_no_enhancement = analyzer_no_enhancement.calculate_event_attribute_sum_per_user('purchase', 'purchase_value')
 
-    analyzer = VariatioAnalyzer(event_data, user_allocations, "a1", user_properties)
+    # Analysis with CUPED
+    analyzer_cuped = VariatioAnalyzer(event_data, user_allocations, "a1", user_properties, mode="cuped")
+    results_cuped = analyzer_cuped.calculate_event_attribute_sum_per_user('purchase', 'purchase_value')
 
-    results_no_enhancement = analyzer.calculate_event_attribute_sum_per_user('purchase', 'purchase_value', "no_enhancement")
-    results_cuped = analyzer.calculate_event_attribute_sum_per_user('purchase', 'purchase_value', "cuped")
-    results_catboost_cuped = analyzer.calculate_event_attribute_sum_per_user('purchase', 'purchase_value', "catboost_cuped")
+    # Analysis with CatBoost CUPED
+    analyzer_catboost_cuped = VariatioAnalyzer(event_data, user_allocations, "a1", user_properties, mode="catboost_cuped")
+    results_catboost_cuped = analyzer_catboost_cuped.calculate_event_attribute_sum_per_user('purchase', 'purchase_value')
 
     return {
         "no_enhancement": results_no_enhancement,

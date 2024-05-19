@@ -122,7 +122,7 @@ user_properties = pd.DataFrame({
     "membership_status": ["Free", "Free", "Free", "Free", "Free"]
 })
 
-analyzer = VariatioAnalyzer(event_data, user_allocations, "A", user_properties)
+analyzer = VariatioAnalyzer(event_data, user_allocations, "A", user_properties, mode="catboost_cuped")
 ```
 
 You can then calculate various metrics such as event count per user, attribute sum per user (useful for calculating metrics like ARPU), or conversion rates to specific events:

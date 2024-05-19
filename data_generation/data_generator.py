@@ -5,26 +5,29 @@ import numpy as np
 from variatio.analyzer import VariatioAnalyzer
 from typing import Tuple
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 # Create folder 'data/{now_timestamp_utc}' if it does not exist
 folder_name = os.path.join(
     'data', 
     datetime.datetime.now(datetime.UTC).strftime('%Y-%m-%d_%H-%M-%S')
 )
 os.makedirs(folder_name, exist_ok=True)
-
 def describe_dataset(df):
-    print("First 5 rows of the dataset:")
-    print(df.head())
+    logging.info("First 5 rows of the dataset:")
+    logging.info(df.head())
     
-    print("\nStatistical summary of the dataset:")
-    print(df.describe())
+    logging.info("\nStatistical summary of the dataset:")
+    logging.info(df.describe())
     
-    print("\nCorrelation between 'value' and 'pre_test_value':")
-    print(df[['value', 'pre_test_value']].corr())
+    logging.info("\nCorrelation between 'value' and 'pre_test_value':")
+    logging.info(df[['value', 'pre_test_value']].corr())
     
-    print("\nAverage 'value' by A/B groups:")
+    logging.info("\nAverage 'value' by A/B groups:")
     ab_means = df.groupby('abgroup')['value'].mean()
-    print(ab_means)
+    logging.info(ab_means)
 
 def generate_synthetic_data(num_users, countries, platforms, user_segments, ab_groups, base_increase_percentage, noise_level=1.0, seed=40):
     # Set seed for reproducibility
@@ -133,6 +136,9 @@ def run_analysis(df: pd.DataFrame):
     }
 
 if __name__ == "__main__":
+    # Set up logging
+    logger.setLevel(logging.DEBUG)
+
     # Generate synthetic data
     generated_data = generate_synthetic_data(
         num_users=100000,
@@ -148,10 +154,11 @@ if __name__ == "__main__":
     file_name = '0_generated_data.csv'
     full_path = os.path.join(folder_name, file_name)
     generated_data.to_csv(full_path, index=False)
-    print(f"Data saved to {full_path}")
+    logging.info(f"Data saved to {full_path}")
 
     # Run analysis on the generated data
     results = run_analysis(generated_data)
-    print("Analysis results (no enhancement):", results["no_enhancement"])
-    print("Analysis results (cuped):", results["cuped"])
-    print("Analysis results (gboost_cuped):", results["gboost_cuped"])
+    logging.info("Analysis results (no enhancement): %s", results["no_enhancement"])
+    logging.info("Analysis results (cuped): %s", results["cuped"])
+    logging.info("Analysis results (gboost_cuped): %s", results["gboost_cuped"])
+

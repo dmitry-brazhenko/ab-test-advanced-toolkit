@@ -12,6 +12,10 @@ from sklearn.pipeline import Pipeline
 from category_encoders import TargetEncoder
 from xgboost import XGBRegressor
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class StatSignificanceMethod(Enum):
     CHI_SQUARE = auto()
@@ -89,8 +93,9 @@ class StatTests:
         # Fit linear regression model on control group data
         model = LinearRegression()
         model.fit(control_pretest_values, control_intest_values)
-        print(control_pretest_values, control_intest_values)
-        print(model.coef_)
+        logger.debug(f"Control pretest values: {control_pretest_values}")
+        logger.debug(f"Control intest values: {control_intest_values}")
+        logger.debug(f"Model coefficients: {model.coef_}")
         adjusted_control_values = control_intest_values - model.predict(control_pretest_values)
 
         # Initialize lists for storing p-values and test group names
@@ -161,11 +166,11 @@ class StatTests:
             ('preprocessor', preprocessor),
             ('regressor', XGBRegressor(verbosity=0))
         ])
-        print("use_enhansement", use_enhansement)
+        logger.debug(f"use_enhansement: {use_enhansement}")
         if use_enhansement:
             try:
-                print(X_control)
-                print(merged_intest[merged_intest['abgroup'] == control_group][value_column])
+                logger.info(f"X_control: {X_control}")
+                logger.debug(f"merged_intest[merged_intest['abgroup'] == control_group][value_column]: {merged_intest[merged_intest['abgroup'] == control_group][value_column]}")
                 x_ = X_control.copy()
                 x_.reset_index(drop=True, inplace=True)
 
@@ -173,10 +178,9 @@ class StatTests:
                 y_.reset_index(drop=True, inplace=True)
                 model.fit(x_, y_)
                 # model.fit(X_control, merged_intest[merged_intest['abgroup'] == control_group][value_column])
-                print("model wast")
+                logger.info(f"Model was fit")
             except Exception as e:
-                print("model was not fit")
-                print(e)
+                logger.error(f"Model was not fit. Error: {e}")
                 # this case is equivalent o regular T-test
                 model = ZeroPredictor()
         else:

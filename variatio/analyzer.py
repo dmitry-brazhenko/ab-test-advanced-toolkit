@@ -7,10 +7,17 @@ from variatio.metrics import Metric, MetricType, MetricParams, MetricResult, Agg
 from variatio.stat_significance import StatTests
 from variatio.vizualizer import format_metrics_to_html
 
+import logging
+
+# Function to set up logging configuration
+def setup_logging(level=logging.INFO):
+    logging.basicConfig(level=level, format='%(asctime)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+    return logger
 
 class VariatioAnalyzer:
     def __init__(self, event_data: pd.DataFrame, ab_test_allocations: pd.DataFrame, control_group_name: str,
-                 user_properties: Optional[pd.DataFrame] = None, mode="gboost_cuped"):
+                 user_properties: Optional[pd.DataFrame] = None, mode="gboost_cuped", logging_level=logging.INFO):
         """
         Initializes the VariatioAnalyzer with event data, AB test allocations, control group name, user properties, and mode.
         :param event_data: DataFrame containing event data. Expected pandas format: |timestamp|userid|event_name|attribute_1|attribute_2|...
@@ -18,7 +25,10 @@ class VariatioAnalyzer:
         :param control_group_name: The name of the control group.
         :param user_properties: DataFrame containing user properties. Expected pandas format: |userid|property_1|property_2|...
         :param mode: Mode of enhancement ("no_enhancement", "cuped", "gboost_cuped").
+        :param logging_level: The logging level to be used (e.g., logging.INFO, logging.DEBUG).
         """
+
+        self.logger = setup_logging(logging_level)
 
         assert mode in ["no_enhancement", "cuped", "gboost_cuped"], "Invalid mode"
 

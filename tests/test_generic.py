@@ -1,7 +1,12 @@
 import pytest
+import logging
 
 from tests.test_utils import generate_event_data, generate_user_properties, generate_user_allocations
 from variatio import VariatioAnalyzer
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 def test_library_is_initialized():
@@ -52,7 +57,7 @@ def test_calculate_metrics(user_properties):
     assert len(analyzer.calculated_metrics) == 2
 
     conversion_rate = analyzer.calculate_conversion('purchase')
-    print(conversion_rate)
+    logger.debug(conversion_rate)
     assert conversion_rate.loc['A'][0] == pytest.approx(0.075472, rel=1e-4)
     assert conversion_rate.loc['B'][0] == pytest.approx(0.085106, rel=1e-4)
     assert len(analyzer.calculated_metrics) == 3

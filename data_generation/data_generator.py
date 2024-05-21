@@ -29,7 +29,7 @@ def describe_dataset(df):
     ab_means = df.groupby('abgroup')['value'].mean()
     logging.info(ab_means)
 
-def generate_synthetic_data(num_users, countries, platforms, user_segments, ab_groups, base_increase_percentage, noise_level=1.0, seed=40):
+def generate_synthetic_data(num_users, countries, platforms, user_segments, ab_groups, base_increase_percentage, noise_level=1.0, correlation_level=0.5, seed=40):
     # Set seed for reproducibility
     np.random.seed(seed)
     
@@ -71,9 +71,9 @@ def generate_synthetic_data(num_users, countries, platforms, user_segments, ab_g
     df['value'] = base_value * (1 + category_effect) * (1 + group_effect) + np.random.normal(0, noise_level, num_users)
 
     # Generating pre-test value with a slightly different formula to introduce non-linearity and noise
-    df['pre_test_value'] = base_value * (1 + np.random.normal(1, 0.5, num_users) * category_effect) * (1 + np.random.normal(0, 0.05, num_users)) + \
-                        0.5 * np.sin(df['engagement_score'] / 2) * np.random.uniform(-1, 1, num_users) + \
-                        np.random.normal(-1, 1, num_users)  # Adding more noise for pre-test value
+    noise = np.random.normal(-1, 1, num_users)
+    nonlinear_component = 0.5 * np.sin(df['engagement_score'] / 2) * np.random.uniform(-1, 1, num_users)
+    df['pre_test_value'] = base_value * (1 + np.random.normal(1, 0.5, num_users) * category_effect) * (1 + np.random.normal(0, 0.05, num_users)) + nonlinear_component + noise
 
 
     describe_dataset(df)

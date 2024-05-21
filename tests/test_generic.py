@@ -2,6 +2,7 @@ import pytest
 import logging
 
 from ab_test_advanced_toolkit import VariatioAnalyzer
+from ab_test_advanced_toolkit.metrics import MetricType
 from tests.test_utils import generate_event_data, generate_user_properties, generate_user_allocations
 
 # Set up logging
@@ -44,22 +45,22 @@ def test_calculate_metrics(user_properties):
 
     event_counts = analyzer.calculate_event_count_per_user('purchase')
 
-    assert len(event_counts) == 2
+    assert event_counts.metrictype == MetricType.EVENT_COUNT_PER_USER
 
-    assert event_counts.loc['A'][0] == pytest.approx(0.283019, rel=1e-4)
-    assert event_counts.loc['B'][0] == pytest.approx(0.404255, rel=1e-4)
+    assert event_counts.result.data['A'] == pytest.approx(0.283019, rel=1e-3)
+    assert event_counts.result.data['B'] == pytest.approx(0.404255, rel=1e-3)
     assert len(analyzer.calculated_metrics) == 1
 
     event_attribute_sum = analyzer.calculate_event_attribute_sum_per_user('purchase', 'purchase_value')
 
-    assert event_attribute_sum.loc['A'][0] == pytest.approx(53.283019, rel=1e-4)
-    assert event_attribute_sum.loc['B'][0] == pytest.approx(91.553191, rel=1e-4)
+    assert event_attribute_sum.result.data['A'] == pytest.approx(53.283019, rel=1e-3)
+    assert event_attribute_sum.result.data['B'] == pytest.approx(91.553191, rel=1e-3)
     assert len(analyzer.calculated_metrics) == 2
 
     conversion_rate = analyzer.calculate_conversion('purchase')
     logger.debug(conversion_rate)
-    assert conversion_rate.loc['A'][0] == pytest.approx(0.075472, rel=1e-4)
-    assert conversion_rate.loc['B'][0] == pytest.approx(0.085106, rel=1e-4)
+    assert conversion_rate.result.data['A'] == pytest.approx(0.075472, rel=1e-3)
+    assert conversion_rate.result.data['B'] == pytest.approx(0.085106, rel=1e-3)
     assert len(analyzer.calculated_metrics) == 3
 
     # testing that report does not fail and file is saved

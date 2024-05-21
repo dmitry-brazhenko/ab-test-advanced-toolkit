@@ -118,10 +118,11 @@ class VariatioAnalyzer:
                                                                     self.control_group_name, self.test_group_names,
                                                                     False)
 
-        self.calculated_metrics.append(Metric(MetricType.EVENT_COUNT_PER_USER, MetricParams(event_name),
+        metric_output = Metric(MetricType.EVENT_COUNT_PER_USER, MetricParams(event_name),
                                               MetricResult(result_intest, self.control_group_name,
-                                                           self.test_group_names, stat_test)))
-        return result_intest
+                                                           self.test_group_names, stat_test))
+        self.calculated_metrics.append(metric_output)
+        return metric_output
 
     def calculate_event_attribute_sum_per_user(self, event_name: str, attribute_name: str) -> pd.DataFrame:
         """
@@ -154,10 +155,10 @@ class VariatioAnalyzer:
                                                                     self.control_group_name, self.test_group_names,
                                                                     False)
 
-        self.calculated_metrics.append(
-            Metric(MetricType.EVENT_ATTRIBUTE_SUM_PER_USER, MetricParams(event_name, attribute_name),
-                MetricResult(result_intest, self.control_group_name, self.test_group_names, stat_test)))
-        return result_intest
+        metric_output = Metric(MetricType.EVENT_ATTRIBUTE_SUM_PER_USER, MetricParams(event_name, attribute_name),
+                MetricResult(result_intest, self.control_group_name, self.test_group_names, stat_test))
+        self.calculated_metrics.append(metric_output)
+        return metric_output
 
     def calculate_conversion(self, target_event: str) -> pd.DataFrame:
         """
@@ -171,11 +172,12 @@ class VariatioAnalyzer:
         stat_test = StatTests.calculate_t_test_for_dataset(merged_intest, self.control_group_name,
                                                            self.test_group_names)
 
-        self.calculated_metrics.append(Metric(
+        metric_output = Metric(
             MetricType.CONVERSION_RATE,
             MetricParams(target_event),
-            MetricResult(result_intest, self.control_group_name, self.test_group_names, stat_test)))
-        return result_intest
+            MetricResult(result_intest, self.control_group_name, self.test_group_names, stat_test))
+        self.calculated_metrics.append(metric_output)
+        return metric_output
 
     def save_report(self, filename: str):
         res = format_metrics_to_html(self.calculated_metrics, self.control_group_name, self.test_group_names)

@@ -1,6 +1,7 @@
 import unittest
 import pandas as pd
 
+from ab_test_advanced_toolkit.metrics import Metric
 from ab_test_advanced_toolkit.stat_significance import StatSignificanceResult
 from data_generation.data_generator import generate_synthetic_data, run_analysis
 
@@ -56,16 +57,12 @@ class TestDataGenerator(unittest.TestCase):
         self.assertTrue("no_enhancement" in results)
         self.assertTrue("cuped" in results)
         self.assertTrue("gboost_cuped" in results)
-        
-        # Further checks can be added based on expected structure of results
-        self.assertIsInstance(results["no_enhancement"][0], pd.DataFrame)
-        self.assertIsInstance(results["cuped"][0], pd.DataFrame)
-        self.assertIsInstance(results["gboost_cuped"][0], pd.DataFrame)
 
-        # Check if second element is StatSignificanceResult
-        self.assertIsInstance(results["no_enhancement"][1], StatSignificanceResult)
-        self.assertIsInstance(results["cuped"][1], StatSignificanceResult)
-        self.assertIsInstance(results["gboost_cuped"][1], StatSignificanceResult)
+        # output type is Metric
+        self.assertIsInstance(results["no_enhancement"], Metric)
+        self.assertIsInstance(results["cuped"], Metric)
+        self.assertIsInstance(results["gboost_cuped"], Metric)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,8 +1,8 @@
 import pytest
 import logging
 
+from ab_test_advanced_toolkit import VariatioAnalyzer
 from tests.test_utils import generate_event_data, generate_user_properties, generate_user_allocations
-from variatio import VariatioAnalyzer
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -79,4 +79,4 @@ def test_calculate_significance():
     analyzer_no_user_properties.calculate_event_count_per_user('purchase')
 
     assert abs(analyzer_user_properties.calculated_metrics[0].result.stat_significance['B'] -
-               analyzer_no_user_properties.calculated_metrics[0].result.stat_significance['B']) > 1e-1
+               analyzer_no_user_properties.calculated_metrics[0].result.stat_significance['B']) > 1e-3

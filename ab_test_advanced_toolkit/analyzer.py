@@ -2,10 +2,11 @@ from typing import Tuple, List, Optional
 
 import pandas as pd
 
-from variatio.data_validation import validate_data
-from variatio.metrics import Metric, MetricType, MetricParams, MetricResult, AggregationOperation
-from variatio.stat_significance import StatTests
-from variatio.vizualizer import format_metrics_to_html
+from ab_test_advanced_toolkit.data_validation import validate_data
+from ab_test_advanced_toolkit.metrics import Metric, MetricType, MetricParams, MetricResult, AggregationOperation
+from ab_test_advanced_toolkit.stat_significance import StatTests
+from ab_test_advanced_toolkit.vizualizer import format_metrics_to_html
+
 
 import logging
 
@@ -104,8 +105,18 @@ class VariatioAnalyzer:
 
         merged_intest, result_intest = self._merge_and_aggregate(self.event_data, self.ab_test_allocations, event_name,
                                                                  AggregationOperation.COUNT)
-        stat_test = StatTests.calculate_gboost_cuped_and_compare(merged_pretest, merged_intest, self.user_properties,
-                                                                   self.control_group_name, self.test_group_names)
+
+        if self.mode == "gboost_cuped":
+            stat_test = StatTests.calculate_gboost_cuped_and_compare(merged_pretest, merged_intest, self.user_properties,
+                                                                self.control_group_name, self.test_group_names, True)
+        elif self.mode == "cuped":
+            stat_test = StatTests.calculate_cuped_and_compare(merged_pretest, merged_intest,
+                                                                self.control_group_name, self.test_group_names)
+        else:
+            stat_test = StatTests.calculate_gboost_cuped_and_compare(merged_pretest, merged_intest,
+                                                                    self.user_properties,
+                                                                    self.control_group_name, self.test_group_names,
+                                                                    False)
 
         self.calculated_metrics.append(Metric(MetricType.EVENT_COUNT_PER_USER, MetricParams(event_name),
                                               MetricResult(result_intest, self.control_group_name,
@@ -146,7 +157,7 @@ class VariatioAnalyzer:
         self.calculated_metrics.append(
             Metric(MetricType.EVENT_ATTRIBUTE_SUM_PER_USER, MetricParams(event_name, attribute_name),
                 MetricResult(result_intest, self.control_group_name, self.test_group_names, stat_test)))
-        return result_intest, stat_test
+        return result_intest
 
     def calculate_conversion(self, target_event: str) -> pd.DataFrame:
         """

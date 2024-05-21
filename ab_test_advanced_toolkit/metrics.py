@@ -4,7 +4,7 @@ import pandas as pd
 
 from enum import Enum, auto
 
-from variatio.stat_significance import StatSignificanceResult
+from ab_test_advanced_toolkit.stat_significance import StatSignificanceResult
 
 
 class MetricType(Enum):

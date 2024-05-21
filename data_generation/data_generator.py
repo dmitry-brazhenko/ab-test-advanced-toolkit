@@ -2,7 +2,7 @@ import os
 import datetime
 import pandas as pd
 import numpy as np
-from variatio.analyzer import VariatioAnalyzer
+from ab_test_advanced_toolkit.analyzer import VariatioAnalyzer
 from typing import Tuple
 
 import logging
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 # Create folder 'data/{now_timestamp_utc}' if it does not exist
 folder_name = os.path.join(
     'data', 
-    datetime.datetime.now(datetime.UTC).strftime('%Y-%m-%d_%H-%M-%S')
+    datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d_%H-%M-%S')
 )
 os.makedirs(folder_name, exist_ok=True)
 def describe_dataset(df):

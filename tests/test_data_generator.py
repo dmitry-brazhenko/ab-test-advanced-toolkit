@@ -1,6 +1,7 @@
 import unittest
 import pandas as pd
-from variatio.stat_significance import StatSignificanceResult
+
+from ab_test_advanced_toolkit.stat_significance import StatSignificanceResult
 from data_generation.data_generator import generate_synthetic_data, run_analysis
 
 class TestDataGenerator(unittest.TestCase):

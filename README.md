@@ -18,7 +18,7 @@ This tool streamlines A/B testing by automatically calculating all the classic m
 ## Installation
 
 ```bash
-pip install variatio
+pip install ab_test_advanced_toolkit
 ```
 
 or install Variatio directly from the source:

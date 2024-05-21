@@ -1,7 +1,7 @@
 import math
 from typing import List
 
-from variatio.metrics import MetricType, Metric
+from ab_test_advanced_toolkit.metrics import MetricType, Metric
 
 
 def describe_metric(metric: Metric) -> str:

@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 dynamic = ["dependencies"]
-name = "variatio"
+name = "ab-test-advanced-toolkit"
 version = "0.0.0"
 
 requires-python = ">=3.8"
 authors = [
-    { name = "Dmitry Brazhenko", email = "brazhenko.dmitry@gmail.com" },
+    { name = "Dmitry Brazhenko", email = "brazhenko.dmitry@gmail.com" }
 ]
 maintainers = [
     { name = "Dmitry Brazhenko", email = "brazhenko.dmitry@gmail.com" }
@@ -22,7 +22,10 @@ keywords = []
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 
+[tool.hatch.build.targets.wheel]
+packages = ["ab_test_advanced_toolkit"]
+
 [project.urls]
-Homepage = "https://github.com/dmitry-brazhenko/variatio"
-Documentation = "https://github.com/dmitry-brazhenko/Variatio/blob/main/README.md"
-Repository = "https://github.com/dmitry-brazhenko/variatio"
+Homepage = "https://github.com/dmitry-brazhenko/ab-test-advanced-toolkit"
+Documentation = "https://github.com/dmitry-brazhenko/ab-test-advanced-toolkit/blob/main/README.md"
+Repository = "https://github.com/dmitry-brazhenko/ab-test-advanced-toolkit"

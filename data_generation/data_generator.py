@@ -67,13 +67,22 @@ def generate_synthetic_data(num_users, countries, platforms, user_segments, ab_g
         np.random.uniform(-2 * base_increase_percentage, base_increase_percentage * 2, num_users),
     )
 
+    # Define mean and covariance for multivariate normal distribution
+    mean = [0, 0]
+    cov = [[1, correlation_level], [correlation_level, 1]]
+    
+    # Generate correlated values for 'value' and 'pre_test_value'
+    correlated_values = np.random.multivariate_normal(mean, cov, num_users)
+
+    # Calculate the noise
+    noise = np.random.normal(0, noise_level, num_users)
+
     # Calculate the final value with added nonlinear category effect and noise
-    df['value'] = base_value * (1 + category_effect) * (1 + group_effect) + np.random.normal(0, noise_level, num_users)
+    df['value'] = base_value * (1 + category_effect) * (1 + group_effect) + correlated_values[:, 0] + noise
 
     # Generating pre-test value with a slightly different formula to introduce non-linearity and noise
-    noise = np.random.normal(-1, 1, num_users)
     nonlinear_component = 0.5 * np.sin(df['engagement_score'] / 2) * np.random.uniform(-1, 1, num_users)
-    df['pre_test_value'] = base_value * (1 + np.random.normal(1, 0.5, num_users) * category_effect) * (1 + np.random.normal(0, 0.05, num_users)) + nonlinear_component + noise
+    df['pre_test_value'] = base_value * (1 + category_effect) * (1 + correlated_values[:, 1]) + nonlinear_component + noise
 
 
     describe_dataset(df)

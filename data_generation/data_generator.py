@@ -156,7 +156,8 @@ if __name__ == "__main__":
         user_segments=['Segment_1', 'Segment_2', 'Segment_3', 'Segment_4'],
         ab_groups=['a1', 'a2', 'b'],
         noise_level=1.0,
-        base_increase_percentage=0.05
+        base_increase_percentage=0.05,
+        correlation_level=0.5,
     )
 
     # Save the data to a CSV file

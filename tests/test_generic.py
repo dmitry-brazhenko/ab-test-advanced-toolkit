@@ -1,7 +1,7 @@
 import pytest
 import logging
 
-from ab_test_advanced_toolkit import VariatioAnalyzer
+from ab_test_advanced_toolkit import ABTestAnalyzer
 from ab_test_advanced_toolkit.metrics import MetricType
 from tests.test_utils import generate_event_data, generate_user_properties, generate_user_allocations
 
@@ -16,10 +16,10 @@ def test_library_is_initialized():
     ab_test_allocations = generate_user_allocations()
 
     # initializing with user properties
-    analyzer = VariatioAnalyzer(event_data, ab_test_allocations, "A", user_properties, mode="gboost_cuped")
+    analyzer = ABTestAnalyzer(event_data, ab_test_allocations, "A", user_properties, mode="gboost_cuped")
 
     # initializing without user properties
-    analyzer = VariatioAnalyzer(event_data, ab_test_allocations, "A", mode="gboost_cuped")
+    analyzer = ABTestAnalyzer(event_data, ab_test_allocations, "A", mode="gboost_cuped")
 
 
 def test_library_is_not_initialized():
@@ -30,7 +30,7 @@ def test_library_is_not_initialized():
 
     # initializing without user properties
     with pytest.raises(Exception) as e_info:
-        VariatioAnalyzer(event_data, ab_test_allocations, "A", mode="gboost_cuped")
+        ABTestAnalyzer(event_data, ab_test_allocations, "A", mode="gboost_cuped")
     assert str("The 'timestamp' column in event_data must be of datetime type.") == str(e_info.value)
 
 
@@ -41,7 +41,7 @@ def test_calculate_metrics(user_properties):
     event_data = generate_event_data()
     ab_test_allocations = generate_user_allocations()
 
-    analyzer = VariatioAnalyzer(event_data, ab_test_allocations, "A", user_properties, mode="gboost_cuped")
+    analyzer = ABTestAnalyzer(event_data, ab_test_allocations, "A", user_properties, mode="gboost_cuped")
 
     event_counts = analyzer.calculate_event_count_per_user('purchase')
 
@@ -73,8 +73,8 @@ def test_calculate_significance():
     ab_test_allocations = generate_user_allocations()
 
     user_properties = generate_user_properties()
-    analyzer_user_properties = VariatioAnalyzer(event_data, ab_test_allocations, "A", user_properties, mode="gboost_cuped")
-    analyzer_no_user_properties = VariatioAnalyzer(event_data, ab_test_allocations, "A", mode="gboost_cuped")
+    analyzer_user_properties = ABTestAnalyzer(event_data, ab_test_allocations, "A", user_properties, mode="gboost_cuped")
+    analyzer_no_user_properties = ABTestAnalyzer(event_data, ab_test_allocations, "A", mode="gboost_cuped")
 
     analyzer_user_properties.calculate_event_count_per_user('purchase')
     analyzer_no_user_properties.calculate_event_count_per_user('purchase')

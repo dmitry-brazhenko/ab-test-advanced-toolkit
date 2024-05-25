@@ -16,11 +16,11 @@ def setup_logging(level=logging.INFO):
     logger = logging.getLogger(__name__)
     return logger
 
-class VariatioAnalyzer:
+class ABTestAnalyzer:
     def __init__(self, event_data: pd.DataFrame, ab_test_allocations: pd.DataFrame, control_group_name: str,
                  user_properties: Optional[pd.DataFrame] = None, mode="gboost_cuped", logging_level=logging.INFO):
         """
-        Initializes the VariatioAnalyzer with event data, AB test allocations, control group name, user properties, and mode.
+        Initializes the ABTestAnalyzer with event data, AB test allocations, control group name, user properties, and mode.
         :param event_data: DataFrame containing event data. Expected pandas format: |timestamp|userid|event_name|attribute_1|attribute_2|...
         :param ab_test_allocations: DataFrame containing AB test allocations. Expected pandas format: |timestamp|userid|abgroup|
         :param control_group_name: The name of the control group.

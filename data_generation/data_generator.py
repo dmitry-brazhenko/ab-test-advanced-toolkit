@@ -2,7 +2,7 @@ import os
 import datetime
 import pandas as pd
 import numpy as np
-from ab_test_advanced_toolkit.analyzer import VariatioAnalyzer
+from ab_test_advanced_toolkit.analyzer import ABTestAnalyzer
 from typing import Tuple
 
 import logging
@@ -127,15 +127,15 @@ def run_analysis(df: pd.DataFrame):
     event_data, user_allocations, user_properties = create_dataframes(df)
     
     # Analysis without enhancement
-    analyzer_no_enhancement = VariatioAnalyzer(event_data, user_allocations, "a1", user_properties, mode="no_enhancement")
+    analyzer_no_enhancement = ABTestAnalyzer(event_data, user_allocations, "a1", user_properties, mode="no_enhancement")
     results_no_enhancement = analyzer_no_enhancement.calculate_event_attribute_sum_per_user('purchase', 'purchase_value')
 
     # Analysis with CUPED
-    analyzer_cuped = VariatioAnalyzer(event_data, user_allocations, "a1", user_properties, mode="cuped")
+    analyzer_cuped = ABTestAnalyzer(event_data, user_allocations, "a1", user_properties, mode="cuped")
     results_cuped = analyzer_cuped.calculate_event_attribute_sum_per_user('purchase', 'purchase_value')
 
     # Analysis with gboost CUPED
-    analyzer_gboost_cuped = VariatioAnalyzer(event_data, user_allocations, "a1", user_properties, mode="gboost_cuped")
+    analyzer_gboost_cuped = ABTestAnalyzer(event_data, user_allocations, "a1", user_properties, mode="gboost_cuped")
     results_gboost_cuped = analyzer_gboost_cuped.calculate_event_attribute_sum_per_user('purchase', 'purchase_value')
 
     return {

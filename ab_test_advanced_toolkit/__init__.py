@@ -1,1 +1,1 @@
-from .analyzer import VariatioAnalyzer
+from .analyzer import ABTestAnalyzer

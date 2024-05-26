@@ -2,6 +2,11 @@ import numpy as np
 from tqdm import tqdm
 from data_generation.data_generator import generate_synthetic_data, run_analysis
 import matplotlib.pyplot as plt
+import logging
+
+# Configure the logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def analyze_variable(variable, values_range, fixed_params, num_iterations=50):
     results = {
@@ -36,9 +41,9 @@ def analyze_variable(variable, values_range, fixed_params, num_iterations=50):
 def display_results(results):
     # Display the results
     for metric_type, sizes in results.items():
-        print(f"{metric_type}:")
+        logger.info(f"{metric_type}:")
         for size, median_value in sizes.items():
-            print(f"  {size}: Median {median_value}")
+            logger.info(f"  {size}: Median {median_value}")
 
 def plot_results(variable, values_range, results, all_p_values):
     # Plotting the results
@@ -70,8 +75,15 @@ def analyze_and_plot(variable, values_range, fixed_params, num_iterations=50):
     plot_results(variable, values_range, results, all_p_values)
 
 def analyze_multiple_metrics(values_ranges, fixed_params, num_iterations=50):
+    """
+    Analyzes and plots graphs for all specified variables.
+
+    :param values_ranges: Dictionary where keys are variables and values are ranges of values for those variables.
+    :param fixed_params: Dictionary of fixed parameters for data generation.
+    :param num_iterations: Number of iterations for data generation and analysis.
+    """
     for variable, values_range in values_ranges.items():
-        print(f"Analyzing {variable}...")
+        logger.info(f"Analyzing {variable}...")
         analyze_and_plot(variable, values_range, fixed_params, num_iterations)
 
 def plot_3d_results(var1, var2, results):
@@ -93,8 +105,16 @@ def plot_3d_results(var1, var2, results):
         plt.show()
 
 def analyze_pairwise_metrics(variable_pairs, values_ranges, fixed_params, num_iterations=50):
+    """
+    Analyzes and plots 3D graphs for all pairs of variables.
+
+    :param variable_pairs: List of tuples of pairs of variables for analysis.
+    :param values_ranges: Dictionary where keys are variables and values are ranges of values for those variables.
+    :param fixed_params: Dictionary of fixed parameters for data generation.
+    :param num_iterations: Number of iterations for data generation and analysis.
+    """
     for (var1, var2) in variable_pairs:
-        print(f"Analyzing pair ({var1}, {var2})...")
+        logger.info(f"Analyzing pair ({var1}, {var2})...")
         
         results = {
             'no_enhancement': [],

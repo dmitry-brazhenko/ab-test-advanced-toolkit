@@ -16,18 +16,18 @@ folder_name = os.path.join(
 )
 os.makedirs(folder_name, exist_ok=True)
 def describe_dataset(df):
-    logging.info("First 5 rows of the dataset:")
-    logging.info(df.head())
+    logging.debug("First 5 rows of the dataset:")
+    logging.debug(df.head())
     
-    logging.info("\nStatistical summary of the dataset:")
-    logging.info(df.describe())
+    logging.debug("\nStatistical summary of the dataset:")
+    logging.debug(df.describe())
     
-    logging.info("\nCorrelation between 'value' and 'pre_test_value':")
-    logging.info(df[['value', 'pre_test_value']].corr())
+    logging.debug("\nCorrelation between 'value' and 'pre_test_value':")
+    logging.debug(df[['value', 'pre_test_value']].corr())
     
-    logging.info("\nAverage 'value' by A/B groups:")
+    logging.debug("\nAverage 'value' by A/B groups:")
     ab_means = df.groupby('abgroup')['value'].mean()
-    logging.info(ab_means)
+    logging.debug(ab_means)
 
 def generate_synthetic_data(num_users, countries, platforms, user_segments, ab_groups, base_increase_percentage, noise_level=1.0, correlation_level=0.5, seed=40):
     # Set seed for reproducibility

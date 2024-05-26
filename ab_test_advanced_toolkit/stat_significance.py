@@ -169,7 +169,7 @@ class StatTests:
         logger.debug(f"use_enhansement: {use_enhansement}")
         if use_enhansement:
             try:
-                logger.info(f"X_control: {X_control}")
+                logger.debug(f"X_control: {X_control}")
                 logger.debug(f"merged_intest[merged_intest['abgroup'] == control_group][value_column]: {merged_intest[merged_intest['abgroup'] == control_group][value_column]}")
                 x_ = X_control.copy()
                 x_.reset_index(drop=True, inplace=True)
@@ -178,7 +178,7 @@ class StatTests:
                 y_.reset_index(drop=True, inplace=True)
                 model.fit(x_, y_)
                 # model.fit(X_control, merged_intest[merged_intest['abgroup'] == control_group][value_column])
-                logger.info(f"Model was fit")
+                logger.debug(f"Model was fit")
             except Exception as e:
                 logger.error(f"Model was not fit. Error: {e}")
                 # this case is equivalent o regular T-test

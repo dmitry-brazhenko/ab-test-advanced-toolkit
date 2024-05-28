@@ -1,1 +1,1 @@
-from .experiment_analysis import analyze_num_users, plot_num_users_results, analyze_and_plot_num_users
+from .experiment_analysis import analyze_feature, plot_feature_results, analyze_and_plot_features

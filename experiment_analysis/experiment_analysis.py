@@ -114,32 +114,30 @@ def analyze_and_plot_features(fixed_params, varying_params, x_params, num_iterat
                 'correlation_level': np.arange(0.0, 1, 0.5)
             }
         num_iterations (int): Number of iterations for analysis.
-            Example: 50
-    
-    Detailed Description:
-        - The function first collects all feature names from the provided dictionaries to ensure no feature appears in more than one category.
-        - For each feature in x_params, the function generates all possible combinations of values from varying_params and x_params (excluding the current x_feature).
-        - For each combination, it then sets up the fixed parameters and updates them with the current combination values.
-        - The function logs the parameters being analyzed and calls analyze_feature and plot_feature_results to analyze and plot the results.
     """
     
-    # Collect all feature names
-    all_features = set(fixed_params.keys()).union(varying_params.keys()).union(x_params.keys())
-
     # Check for errors
-    for feature in all_features:
-        count = (
-            (1 if feature in fixed_params else 0) +
-            (1 if feature in varying_params else 0) +
-            (1 if feature in x_params else 0)
-        )
-        if count > 1:
-            raise ValueError(f"Feature '{feature}' cannot be in more than one category of parameters.")
+    # Ensure no variable is in both fixed_params and varying_params
+    for feature in set(fixed_params.keys()).intersection(varying_params.keys()):
+        raise ValueError(f"Feature '{feature}' cannot be in both fixed_params and varying_params.")
 
+    # Ensure x_params is not empty
+    if not x_params:
+        raise ValueError("The x_params dictionary must contain at least one feature.")
+
+    # Ensure at least one feature in fixed_params or varying_params
+    if not fixed_params and not varying_params:
+        raise ValueError("There must be at least one feature in either fixed_params or varying_params.")
+
+    # Ensure each feature in x_params has at least one value
+    for feature, values in x_params.items():
+        if len(values) == 0:
+            raise ValueError(f"The feature '{feature}' in x_params must have at least one value.")
+    
     # Main logic for x_params
     for x_feature, x_values in x_params.items():
-        # Create combined combinations of varying_params and x_params, excluding the current x_feature
-        combined_params = {**varying_params, **{k: v for k, v in x_params.items() if k != x_feature}}
+        # Create combined combinations of varying_params, excluding the current x_feature
+        combined_params = {k: v for k, v in varying_params.items() if k != x_feature}
         all_combinations = list(product(*[[(k, v) for v in values] for k, values in combined_params.items()]))
         
         for combination in all_combinations:

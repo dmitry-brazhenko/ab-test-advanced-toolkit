@@ -154,6 +154,10 @@ def analyze_and_plot_features(fixed_params, varying_params, x_params, num_iterat
             for k, v in combination:
                 params[k] = v
 
+            # Exclude x_feature from fixed_params
+            if x_feature in params:
+                del params[x_feature]
+
             # Ensure the correct value for the x_feature
             logger.info(f"Analyzing feature '{x_feature}' with fixed params: {params}")
             temp_values_ranges = {x_feature: x_values}

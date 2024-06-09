@@ -4,6 +4,7 @@ from data_generation.data_generator import generate_synthetic_data, run_analysis
 import matplotlib.pyplot as plt
 import seaborn as sns
 import logging
+import hashlib
 
 from itertools import product
 
@@ -11,6 +12,12 @@ from itertools import product
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+def get_seed(params, i):
+    # Convert parameters to a sorted string and hash it
+    param_str = str(sorted(params.items()))
+    param_hash = int(hashlib.md5(param_str.encode()).hexdigest(), 16) % (10 ** 8)  # Limit the size of the hash
+    return param_hash * i  # Combine the hash with the iteration number
 
 def display_results(results):
     # Display the results
@@ -38,7 +45,9 @@ def analyze_feature(values_ranges, fixed_params, feature, num_iterations=50):
         for i in range(num_iterations):
             params = fixed_params.copy()
             params[feature] = value
-            generated_data = generate_synthetic_data(**params, seed=i)
+            # Generate seed using the hash of parameters and iteration number
+            seed = get_seed(params, i)
+            generated_data = generate_synthetic_data(**params, seed=seed)
             analysis_results = run_analysis(generated_data)
 
             no_enhancement_values.append(analysis_results['no_enhancement'].result.stat_significance['b'])

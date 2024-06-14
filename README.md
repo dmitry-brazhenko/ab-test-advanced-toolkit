@@ -1,4 +1,4 @@
-# AB Test Advanced Toolkit
+# AB Test Advanced Toolkit: CUPED and Gradient Boosting
 
 [![PyPI version](https://img.shields.io/pypi/v/variatio.svg)](https://pypi.org/project/variatio/)
 [![Python](https://github.com/dmitry-brazhenko/SharpToken/actions/workflows/build-test-and-publish.yml/badge.svg?branch=main)](https://github.com/dmitry-brazhenko/SharpToken/actions/workflows/build-test-and-publish.yml)

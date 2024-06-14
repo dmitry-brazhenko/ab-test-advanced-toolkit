@@ -1,11 +1,11 @@
-# AB Test Advanced Toolkit: CUPED and Gradient Boosting
+# A/B Test Advanced Toolkit: CUPED and Gradient Boosting
 
 [![PyPI version](https://img.shields.io/pypi/v/variatio.svg)](https://pypi.org/project/variatio/)
 [![Python](https://github.com/dmitry-brazhenko/SharpToken/actions/workflows/build-test-and-publish.yml/badge.svg?branch=main)](https://github.com/dmitry-brazhenko/SharpToken/actions/workflows/build-test-and-publish.yml)
 [![GitHub Issues](https://img.shields.io/github/issues/dmitry-brazhenko/Variatio.svg)](https://github.com/dmitry-brazhenko/Variatio/issues)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-AB Test Advanced Toolkit is an experimental Python library designed for advanced A/B testing analysis. It leverages statistical techniques and machine learning, including variance reduction through CUPED and integration with XGBoost for predictive insights. AB Test Advanced Toolkit is ideal for data scientists and researchers looking to obtain deeper insights from their A/B testing efforts.
+A/B Test Advanced Toolkit is an experimental Python library designed for advanced A/B testing analysis. It leverages statistical techniques and machine learning, including variance reduction through CUPED and integration with XGBoost for predictive insights. A/B Test Advanced Toolkit is ideal for data scientists and researchers looking to obtain deeper insights from their A/B testing efforts.
 
 ## Features
 
@@ -20,7 +20,7 @@ This tool streamlines A/B testing by automatically calculating all the classic m
 pip install ab_test_advanced_toolkit
 ```
 
-or install AB Test Advanced Toolkit directly from the source:
+or install A/B Test Advanced Toolkit directly from the source:
 
 ```bash
 git clone https://github.com/dmitry-brazhenko/ab-test-advanced-toolkit.git
@@ -30,11 +30,11 @@ pip install .
 
 ## Data Preparation
 
-To use AB Test Advanced Toolkit effectively, you need to prepare three main types of data:
+To use A/B Test Advanced Toolkit effectively, you need to prepare three main types of data:
 
 ### 1. Event Data
 
-The `event_data` is crucial for analysis in AB Test Advanced Toolkit. It tracks user interactions and should include the following mandatory columns:
+The `event_data` is crucial for analysis in A/B Test Advanced Toolkit. It tracks user interactions and should include the following mandatory columns:
 
 - `timestamp`: The date and time when the event occurred.
 - `userid`: A unique identifier for the user who triggered the event.

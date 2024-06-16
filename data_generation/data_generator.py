@@ -31,7 +31,7 @@ def describe_dataset(df):
 
 def generate_synthetic_data(num_users, countries, platforms, user_segments, ab_groups, base_increase_percentage, noise_level=1.0, correlation_level=0.5, seed=40):
     # Set seed for reproducibility
-    np.random.seed(seed)
+    np.random.seed(seed  % (2**32 - 1))
     
     # Generate synthetic data
     data = {

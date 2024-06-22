@@ -176,8 +176,11 @@ class StatTests:
 
                 y_ = merged_intest[merged_intest['abgroup'] == control_group][value_column].copy()
                 y_.reset_index(drop=True, inplace=True)
-                model.fit(x_, y_)
-                # model.fit(X_control, merged_intest[merged_intest['abgroup'] == control_group][value_column])
+
+                x_train, _ = prepare_dataset(merged_pretest, user_properties)
+                y_train = merged_intest[value_column]
+                model.fit(x_train.reset_index(drop=True), y_train.reset_index(drop=True))
+
                 logger.debug(f"Model was fit")
             except Exception as e:
                 logger.error(f"Model was not fit. Error: {e}")

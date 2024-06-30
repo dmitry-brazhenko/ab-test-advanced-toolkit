@@ -12,12 +12,14 @@ from itertools import product
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+MAX_SEED_VALUE = 2**32
+
 
 def get_seed(params, i):
     # Convert parameters to a sorted string and hash it
     param_str = str(sorted(params.items()))
-    param_hash = int(hashlib.md5(param_str.encode()).hexdigest(), 16) % (10 ** 8)  # Limit the size of the hash
-    return param_hash * i  # Combine the hash with the iteration number
+    param_hash = int(hashlib.md5(param_str.encode()).hexdigest(), 16) % MAX_SEED_VALUE  # Limit the size of the hash
+    return (param_hash + i) % MAX_SEED_VALUE  # Ensure the seed is within the allowable range
 
 def display_results(results):
     # Display the results

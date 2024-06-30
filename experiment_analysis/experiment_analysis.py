@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import logging
 import hashlib
+import os
+from datetime import datetime, timezone
+import time
 
 from itertools import product
 
@@ -62,43 +65,48 @@ def analyze_feature(values_ranges, fixed_params, feature, num_iterations=50):
 
     return results
 
-def plot_feature_results(results, feature, fixed_params, show_histogram=False):
+def plot_feature_results(results, feature, fixed_params, num_iterations, ax=None, show_histogram=False):
     sns.set(style="whitegrid")
     feature_range = [val[0] for val in results['no_enhancement']]
 
-    plt.figure(figsize=(12, 8))
-    sns.lineplot(x=feature_range, y=[val[1] for val in results['no_enhancement']], marker='o', label='No Enhancement')
-    sns.lineplot(x=feature_range, y=[val[1] for val in results['cuped']], marker='s', label='CUPED')
-    sns.lineplot(x=feature_range, y=[val[1] for val in results['gboost_cuped']], marker='^', label='GBoost CUPED')
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(12, 8))
+    else:
+        fig = ax.figure
 
-    plt.xlabel(feature)
-    plt.ylabel('Median P-value')
-    plt.title(f'Median P-values vs {feature}')
-    plt.legend()
-    plt.grid(True)
+    sns.lineplot(x=feature_range, y=[val[1] for val in results['no_enhancement']], marker='o', label='No Enhancement', ax=ax)
+    sns.lineplot(x=feature_range, y=[val[1] for val in results['cuped']], marker='s', label='CUPED', ax=ax)
+    sns.lineplot(x=feature_range, y=[val[1] for val in results['gboost_cuped']], marker='^', label='GBoost CUPED', ax=ax)
+
+    ax.set_xlabel(feature)
+    ax.set_ylabel('Median P-value')
+    ax.set_title(f'Median P-values vs {feature}')
+    ax.legend()
+    ax.grid(True)
     
     # Format fixed parameters
     fixed_params_str = "\n".join([f"{k}: {v}" for k, v in fixed_params.items()])
+
+    # Add num_iterations to the notes
+    fixed_params_str += f"\nnum_iterations: {num_iterations}"
     
     # Adding the notes below the plot with left alignment
-    plt.figtext(0.1, -0.15, f"Fixed parameters:\n{fixed_params_str}", wrap=True, horizontalalignment='left', fontsize=10)
-    plt.subplots_adjust(bottom=0.1)  # Adjust this value to reduce the space
-    plt.show()
+    fig.text(0.1, -0.15, f"Fixed parameters:\n{fixed_params_str}", wrap=True, horizontalalignment='left', fontsize=10)
+    fig.subplots_adjust(bottom=0.15)  # Adjusted this value to reduce the space
 
     # Plotting the histogram of p-values
     if show_histogram:
-        plt.figure(figsize=(12, 8))
-        sns.histplot([val[1] for val in results['no_enhancement']], bins=50, kde=True, label='P-values', color='blue')
-        plt.xlabel('P-value')
-        plt.ylabel('Frequency')
-        plt.title(f'Histogram of P-values for {feature}')
-        plt.legend()
-        plt.grid(True)
+        fig_hist, ax_hist = plt.subplots(figsize=(12, 8))
+        sns.histplot([val[1] for val in results['no_enhancement']], bins=50, kde=True, label='P-values', color='blue', ax=ax_hist)
+        ax_hist.set_xlabel('P-value')
+        ax_hist.set_ylabel('Frequency')
+        ax_hist.set_title(f'Histogram of P-values for {feature}')
+        ax_hist.legend()
+        ax_hist.grid(True)
     
-    plt.show()
+    return fig
 
-
-def analyze_and_plot_features(fixed_params, varying_params, x_params, num_iterations=50):
+def analyze_and_plot_features(fixed_params, varying_params, x_params, num_iterations=50, save_dir='plots'):
     """
     Analyzes and plots features with given ranges, varying the values of specified features while keeping others fixed.
     
@@ -125,6 +133,10 @@ def analyze_and_plot_features(fixed_params, varying_params, x_params, num_iterat
                 'correlation_level': np.arange(0.0, 1, 0.5)
             }
         num_iterations (int): Number of iterations for analysis.
+        save_dir (str): Directory to save the plots.
+        
+    Returns:
+        list: Paths to the saved plot files.
     """
     
     # Check for errors
@@ -145,6 +157,12 @@ def analyze_and_plot_features(fixed_params, varying_params, x_params, num_iterat
         if len(values) == 0:
             raise ValueError(f"The feature '{feature}' in x_params must have at least one value.")
     
+    # Ensure the save directory exists
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    
+    saved_files = []
+
     # Main logic for x_params
     for x_feature, x_values in x_params.items():
         # Create combined combinations of varying_params, excluding the current x_feature
@@ -164,4 +182,23 @@ def analyze_and_plot_features(fixed_params, varying_params, x_params, num_iterat
             logger.info(f"Analyzing feature '{x_feature}' with fixed params: {params}")
             temp_values_ranges = {x_feature: x_values}
             results = analyze_feature(temp_values_ranges, params, x_feature, num_iterations)
-            plot_feature_results(results, x_feature, params)
+            
+            # Plotting and saving the plot
+            fig = plot_feature_results(results, x_feature, params, num_iterations)
+            
+            # Show the plot
+            plt.show()
+            
+            # Generate a unique filename
+            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S-%f") + '_UTC'
+            unique_hash = hashlib.md5(str(time.time()).encode()).hexdigest()[:8]
+            filename = f"{timestamp}_{x_feature}_{unique_hash}.png"
+            filepath = os.path.join(save_dir, filename)
+            
+            # Save the plot
+            fig.savefig(filepath, bbox_inches='tight')
+            plt.close(fig)
+            
+            saved_files.append(filepath)
+    
+    return saved_files

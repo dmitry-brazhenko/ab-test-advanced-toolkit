@@ -119,7 +119,6 @@ def analyze_and_plot_features(fixed_params, varying_params, x_params, num_iterat
                 'user_segments': ['Segment_1', 'Segment_2'],
                 'ab_groups': ['a1', 'a2'],
                 'noise_level': 0.5,
-                'correlation_level': 0.5
             }
         varying_params (dict): Parameters with ranges used for generating combinations.
             Example:
@@ -130,7 +129,6 @@ def analyze_and_plot_features(fixed_params, varying_params, x_params, num_iterat
             Example:
             {
                 'num_users': range(100, 5000, 1000),
-                'correlation_level': np.arange(0.0, 1, 0.5)
             }
         num_iterations (int): Number of iterations for analysis.
         save_dir (str): Directory to save the plots.

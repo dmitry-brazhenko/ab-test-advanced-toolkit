@@ -22,7 +22,6 @@ class TestDataGenerator(unittest.TestCase):
             ab_groups=ab_groups,
             noise_level=1.0,
             base_increase_percentage=0.05,
-            correlation_level=0.5,
         )
         
         # Check if the data is generated correctly
@@ -50,7 +49,6 @@ class TestDataGenerator(unittest.TestCase):
             ab_groups=ab_groups,
             noise_level=1.0,
             base_increase_percentage=0.05,
-            correlation_level=0.5,
         )
         
         results = run_analysis(data)

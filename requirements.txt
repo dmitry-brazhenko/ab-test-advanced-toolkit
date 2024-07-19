@@ -4,3 +4,6 @@ scipy>=1.10.0
 xgboost
 category_encoders
 pytest
+tqdm==4.66.4
+matplotlib==3.9.1
+seaborn==0.13.2

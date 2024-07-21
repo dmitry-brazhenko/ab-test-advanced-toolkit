@@ -103,8 +103,10 @@ class ABTestAnalyzer:
         merged_pretest, _ = self._merge_and_aggregate(self.event_data, self.ab_test_allocations, event_name,
                                                       AggregationOperation.COUNT, pretest=True)
 
+
         merged_intest, result_intest = self._merge_and_aggregate(self.event_data, self.ab_test_allocations, event_name,
                                                                  AggregationOperation.COUNT)
+        return merged_pretest, merged_intest
 
         if self.mode == "gboost_cuped":
             stat_test = StatTests.calculate_gboost_cuped_and_compare(merged_pretest, merged_intest, self.user_properties,

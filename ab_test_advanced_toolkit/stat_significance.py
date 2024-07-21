@@ -6,6 +6,8 @@ from scipy import stats
 from sklearn.compose import ColumnTransformer
 from sklearn.dummy import DummyRegressor
 from sklearn.linear_model import LinearRegression
+from catboost import CatBoostRegressor
+
 
 import pandas as pd
 from sklearn.pipeline import Pipeline
@@ -162,10 +164,13 @@ class StatTests:
         )
 
         # Embed the preprocessing step into a pipeline with XGBRegressor
-        model: Union[XGBRegressor, ZeroPredictor] = Pipeline(steps=[
-            ('preprocessor', preprocessor),
-            ('regressor', XGBRegressor(verbosity=0))
-        ])
+        # model: Union[XGBRegressor, ZeroPredictor] = Pipeline(steps=[
+        #     ('preprocessor', preprocessor),
+        #     ('regressor', XGBRegressor(verbosity=0))
+        # ])
+        model = CatBoostRegressor(iterations=10,
+                                  learning_rate=0.01,
+                                  depth=10)
         logger.debug(f"use_enhansement: {use_enhansement}")
         if use_enhansement:
             try:
@@ -179,7 +184,7 @@ class StatTests:
 
                 x_train, _ = prepare_dataset(merged_pretest, user_properties)
                 y_train = merged_intest[value_column]
-                model.fit(x_train.reset_index(drop=True), y_train.reset_index(drop=True))
+                model.fit(x_train.reset_index(drop=True), y_train.reset_index(drop=True), cat_features=categorical_features)
 
                 logger.debug(f"Model was fit")
             except Exception as e:

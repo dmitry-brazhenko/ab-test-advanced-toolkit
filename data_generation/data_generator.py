@@ -30,49 +30,63 @@ def describe_dataset(df):
     ab_means = df.groupby('abgroup')['value'].mean()
     logger.debug(ab_means)
 
-def generate_value(pre_test_value, country, platform, user_segment, base_increase_percentage, noise_level):
-    # Initial value based on pre_test_value
-    value = pre_test_value * (1 + base_increase_percentage)
+
+
+def generate_pre_test_value(age, engagement_score, country, platform, user_segment, noise_level):
+    # Generate base pre_test_value
+    base_value = 10 + age / 10 + engagement_score
+    value = base_value
     
-    # Non-linear dependencies
     if country == 'US' and platform == 'iOS':
-        value += np.sin(pre_test_value) * 5
-    elif country == 'IN' and platform == 'Desktop' and pre_test_value > 0:
-        value -= np.log1p(pre_test_value) * 3
-    elif user_segment == 'Segment_2' and platform == 'Android' and pre_test_value >= 0:
-        value += np.sqrt(pre_test_value) * 2
-    else:
-        value += np.random.normal(0, noise_level)
+        value += np.sin(base_value) * 5
+    elif country == 'IN' and platform == 'Desktop' and base_value > 0:
+        value -= np.log1p(base_value) * 3
+    elif user_segment == 'Segment_2' and platform == 'Android' and base_value >= 0:
+        value += np.sqrt(base_value) * 2
+    elif country == 'FR':
+        value += np.power(base_value, 2) * 0.1
     
-    # Add random noise
     value += np.random.normal(0, noise_level)
     
-    return max(value, 0)  # Ensuring value is non-negative
+    return value
 
-def generate_synthetic_data(num_users=1000, countries=['US', 'UK', 'DE', 'FR', 'CA', 'AU', 'JP', 'IN'],
+def generate_intermediate_in_test_value(pre_test_value, country, platform, user_segment, noise_level):
+    value = pre_test_value
+    
+    if country == 'UK' and platform == 'Web':
+        value += np.cos(pre_test_value) * 4
+    elif country == 'DE' and platform == 'iOS' and pre_test_value > 0:
+        value -= np.exp(pre_test_value / 7)
+    elif user_segment == 'Segment_3' and platform == 'Desktop' and pre_test_value >= 0:
+        value += np.log(pre_test_value + 1) * 3
+    elif country == 'AU':
+        value += np.power(pre_test_value, 2) * 0.07
+    elif user_segment == 'Segment_4':
+        value -= np.power(pre_test_value, 2) * 0.02
+    
+    value += np.random.normal(0, noise_level)
+    
+    return value
+
+
+
+def generate_synthetic_data(num_users=1000, alpha=0.5, countries=['US', 'UK', 'DE', 'FR', 'CA', 'AU', 'JP', 'IN'],
                             platforms=['iOS', 'Android', 'Web', 'Desktop'], user_segments=['Segment_1', 'Segment_2', 'Segment_3', 'Segment_4'],
                             ab_groups=['a1', 'a2', 'b'], noise_level=1.0, base_increase_percentage=0.2, seed=40):
-    # Set seed for reproducibility
     np.random.seed(seed)
     random.seed(seed)
     
-    # Empty DataFrame for data
     data = {
         'userid': [],
         'country': [],
         'platform': [],
         'user_segment': [],
         'abgroup': [],
-        # TODO
-        # 'age': np.random.randint(18, 65, num_users),  # Age between 18 and 65
-        # 'engagement_score': np.random.rand(num_users) * 10,  # Random score between 0 and 10
+        'age': [],
+        'engagement_score': [],
         'pre_test_value': [],
         'value': []
     }
-
-    # TODO
-    # # Calculate the base effect from features
-    # base_value = 10 + df['age'] / 10 + df['engagement_score']
     
     for i in range(num_users):
         user_id = i + 1
@@ -80,20 +94,24 @@ def generate_synthetic_data(num_users=1000, countries=['US', 'UK', 'DE', 'FR', '
         platform = random.choice(platforms)
         user_segment = random.choice(user_segments)
         ab_group = random.choice(ab_groups)
+        age = np.random.randint(18, 65)
+        engagement_score = np.random.randint(1, 11)
         
-        # Generate pre_test_value
-        pre_test_value = np.random.normal(5, 2)
+        pre_test_value = generate_pre_test_value(age, engagement_score, country, platform, user_segment, noise_level)
+        intermediate_value = generate_intermediate_in_test_value(pre_test_value, country, platform, user_segment, noise_level)
         
-        # Generate in_test_value with non-linear dependency
-        in_test_value = generate_value(pre_test_value, country, platform, user_segment, base_increase_percentage, noise_level)
+        in_test_value_alpha = alpha * pre_test_value + (1 - alpha) * intermediate_value
+        in_test_value_increased = in_test_value_alpha * (1 + base_increase_percentage) + np.random.normal(0, noise_level)
         
         data['userid'].append(user_id)
         data['country'].append(country)
         data['platform'].append(platform)
         data['user_segment'].append(user_segment)
         data['abgroup'].append(ab_group)
+        data['age'].append(age)
+        data['engagement_score'].append(engagement_score)
         data['pre_test_value'].append(pre_test_value)
-        data['value'].append(in_test_value)
+        data['value'].append(in_test_value_increased)
     
     df = pd.DataFrame(data)
     return df
@@ -121,9 +139,8 @@ def create_dataframes(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.
 
     user_properties = pd.DataFrame({
         "userid": df["userid"],
-        # TODO
-
-        # "age": df["age"],
+        "age": df["age"],
+        "engagement_score": df["engagement_score"],
         "country": df["country"],
         "device_type": df["platform"],
         "membership_status": ["Free"] * len(df)

@@ -1,3 +1,4 @@
+import hashlib
 import os
 import datetime
 import pandas as pd
@@ -31,41 +32,40 @@ def describe_dataset(df):
     logger.debug(ab_means)
 
 
+def calculate_hash_1(val):
+    hash_value = int(hashlib.md5(f"{val}".encode()).hexdigest(), 16)
+    residual =  (hash_value % 25) / 25
+    return residual
+
+def calculate_hash_2(val):
+    hash_value = int(hashlib.sha256(f"{val}".encode()).hexdigest(), 16)
+    residual = (hash_value % 25) / 25
+    return residual
 
 def generate_pre_test_value(age, engagement_score, country, platform, user_segment, noise_level):
-    # Generate base pre_test_value
-    base_value = 10 + age / 10 + engagement_score
-    value = base_value
-    
-    if country == 'US' and platform == 'iOS':
-        value += np.sin(base_value) * 5
-    elif country == 'IN' and platform == 'Desktop' and base_value > 0:
-        value -= np.log1p(base_value) * 3
-    elif user_segment == 'Segment_2' and platform == 'Android' and base_value >= 0:
-        value += np.sqrt(base_value) * 2
-    elif country == 'FR':
-        value += np.power(base_value, 2) * 0.1
-    
+    # Create a hash of the country and platform
+    value = 1 + \
+            calculate_hash_1(age) + \
+            calculate_hash_1(engagement_score) + \
+            calculate_hash_1(country) + \
+            calculate_hash_1(platform) + \
+            calculate_hash_1(user_segment)
+    # Add deterministic noise
     value += np.random.normal(0, noise_level)
-    
     return value
 
-def generate_intermediate_in_test_value(pre_test_value, country, platform, user_segment, noise_level):
-    value = pre_test_value
-    
-    if country == 'UK' and platform == 'Web':
-        value += np.cos(pre_test_value) * 4
-    elif country == 'DE' and platform == 'iOS' and pre_test_value > 0:
-        value -= np.exp(pre_test_value / 7)
-    elif user_segment == 'Segment_3' and platform == 'Desktop' and pre_test_value >= 0:
-        value += np.log(pre_test_value + 1) * 3
-    elif country == 'AU':
-        value += np.power(pre_test_value, 2) * 0.07
-    elif user_segment == 'Segment_4':
-        value -= np.power(pre_test_value, 2) * 0.02
-    
+
+
+def generate_intermediate_in_test_value(age, engagement_score, country, platform, user_segment, noise_level):
+    # Create a hash of the country and platform
+    value = 1 + \
+            calculate_hash_2(age) + \
+            calculate_hash_2(engagement_score) + \
+            calculate_hash_2(country) + \
+            calculate_hash_2(platform) + \
+            calculate_hash_2(user_segment)
+    # Add deterministic noise
     value += np.random.normal(0, noise_level)
-    
     return value
 
 
@@ -98,11 +98,11 @@ def generate_synthetic_data(num_users=1000, alpha=0.5, countries=['US', 'UK', 'D
         engagement_score = np.random.randint(1, 11)
         
         pre_test_value = generate_pre_test_value(age, engagement_score, country, platform, user_segment, noise_level)
-        intermediate_value = generate_intermediate_in_test_value(pre_test_value, country, platform, user_segment, noise_level)
+        intermediate_value = generate_intermediate_in_test_value(age, engagement_score, country, platform, user_segment, noise_level)
         
         in_test_value_alpha = alpha * pre_test_value + (1 - alpha) * intermediate_value
-        in_test_value_increased = in_test_value_alpha * (1 + base_increase_percentage) + np.random.normal(0, noise_level)
-        
+        # in_test_value_increased = in_test_value_alpha * (1 + base_increase_percentage) + np.random.normal(0, noise_level)
+        in_test_value_increased = in_test_value_alpha
         data['userid'].append(user_id)
         data['country'].append(country)
         data['platform'].append(platform)

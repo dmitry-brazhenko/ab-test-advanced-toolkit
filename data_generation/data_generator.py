@@ -101,8 +101,11 @@ def generate_synthetic_data(num_users=1000, alpha=0.5, countries=['US', 'UK', 'D
         intermediate_value = generate_intermediate_in_test_value(age, engagement_score, country, platform, user_segment, noise_level)
         
         in_test_value_alpha = alpha * pre_test_value + (1 - alpha) * intermediate_value
-        # in_test_value_increased = in_test_value_alpha * (1 + base_increase_percentage) + np.random.normal(0, noise_level)
         in_test_value_increased = in_test_value_alpha
+        if ab_group.startswith('b'):
+            in_test_value_increased = in_test_value_increased * (1 + base_increase_percentage)
+
+        in_test_value_increased = in_test_value_increased + np.random.normal(0, noise_level)
         data['userid'].append(user_id)
         data['country'].append(country)
         data['platform'].append(platform)

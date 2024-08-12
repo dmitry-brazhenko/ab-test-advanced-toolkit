@@ -2,6 +2,7 @@ from enum import Enum, auto
 from typing import List, Union, Optional
 
 import numpy as np
+from catboost import CatBoostRegressor
 from scipy import stats
 from sklearn.compose import ColumnTransformer
 from sklearn.dummy import DummyRegressor
@@ -154,18 +155,9 @@ class StatTests:
 
         X_control, categorical_features = prepare_dataset(control_pretest_data, user_properties)
 
-        preprocessor = ColumnTransformer(
-            transformers=[
-                ('cat', TargetEncoder(smoothing=0.8), categorical_features)
-            ],
-            remainder='passthrough'
-        )
+        # model = CatBoostRegressor(loss_function='RMSE', cat_features=categorical_features, verbose=False)
+        model = CatBoostRegressor(iterations=500, learning_rate=0.1, depth=4, loss_function='RMSE', cat_features=categorical_features)
 
-        # Embed the preprocessing step into a pipeline with XGBRegressor
-        model: Union[XGBRegressor, ZeroPredictor] = Pipeline(steps=[
-            ('preprocessor', preprocessor),
-            ('regressor', XGBRegressor(verbosity=0))
-        ])
         logger.debug(f"use_enhansement: {use_enhansement}")
         if use_enhansement:
             try:
@@ -179,7 +171,7 @@ class StatTests:
 
                 x_train, _ = prepare_dataset(merged_pretest, user_properties)
                 y_train = merged_intest[value_column]
-                model.fit(x_train.reset_index(drop=True), y_train.reset_index(drop=True))
+                model.fit(x_train.reset_index(drop=True), y_train.reset_index(drop=True), verbose=False)
 
                 logger.debug(f"Model was fit")
             except Exception as e:

@@ -134,7 +134,7 @@ class ABTestAnalyzer:
 
         if attribute_name not in self.event_data.columns:
             raise ValueError(f"Attribute {attribute_name} not found in event data.")
-        if self.event_data[attribute_name].dtype not in [int, float]:
+        if not pd.api.types.is_numeric_dtype(self.event_data[attribute_name]):
             raise ValueError(f"Attribute {attribute_name} is not numeric.")
 
         merged_pretest, _ = self._merge_and_aggregate(self.event_data, self.ab_test_allocations, event_name,

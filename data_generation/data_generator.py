@@ -51,7 +51,7 @@ def generate_pre_test_value(age, engagement_score, country, platform, user_segme
             calculate_hash_1(platform) + \
             calculate_hash_1(user_segment)
     # Add deterministic noise
-    value += np.random.normal(0, noise_level)
+    # value += np.random.normal(0, noise_level)
     return value
 
 
@@ -65,7 +65,7 @@ def generate_intermediate_in_test_value(age, engagement_score, country, platform
             calculate_hash_2(platform) + \
             calculate_hash_2(user_segment)
     # Add deterministic noise
-    value += np.random.normal(0, noise_level)
+    # value += np.random.normal(0, noise_level)
     return value
 
 

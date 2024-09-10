@@ -28,8 +28,8 @@ def display_results(results):
     # Display the results
     for metric_type, sizes in results.items():
         logger.info(f"{metric_type}:")
-        for size, median_value in sizes.items():
-            logger.info(f"  {size}: Median {median_value}")
+        for size, mean_value in sizes.items():
+            logger.info(f"  {size}: Mean {mean_value}")
 
 
 # Analyzing p_values vs num_users with fixed other parameters one by one for all combinations
@@ -59,9 +59,9 @@ def analyze_feature(values_ranges, fixed_params, feature, num_iterations=50):
             cuped_values.append(analysis_results['cuped'].result.stat_significance['b'])
             gboost_cuped_values.append(analysis_results['gboost_cuped'].result.stat_significance['b'])
 
-        results['no_enhancement'].append((value, np.median(no_enhancement_values)))
-        results['cuped'].append((value, np.median(cuped_values)))
-        results['gboost_cuped'].append((value, np.median(gboost_cuped_values)))
+        results['no_enhancement'].append((value, np.mean(no_enhancement_values)))
+        results['cuped'].append((value, np.mean(cuped_values)))
+        results['gboost_cuped'].append((value, np.mean(gboost_cuped_values)))
 
     return results
 
@@ -79,8 +79,8 @@ def plot_feature_results(results, feature, fixed_params, num_iterations, ax=None
     sns.lineplot(x=feature_range, y=[val[1] for val in results['gboost_cuped']], marker='^', label='GBoost CUPED', ax=ax)
 
     ax.set_xlabel(feature)
-    ax.set_ylabel('Median P-value')
-    ax.set_title(f'Median P-values vs {feature}')
+    ax.set_ylabel('Mean P-value')
+    ax.set_title(f'Mean P-values vs {feature}')
     ax.legend()
     ax.grid(True)
     

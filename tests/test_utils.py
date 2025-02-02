@@ -30,7 +30,7 @@ def generate_event_data():
     user_ids = np.random.randint(1, 9, size=100)
     event_names = np.random.choice(['login', 'purchase'], size=100, p=[0.7, 0.3])
     purchase_values = np.where(event_names == 'purchase', np.random.randint(50, 350, size=100), 0)
-    timestamps = pd.date_range(start="2023-01-01", periods=100, freq='H')
+    timestamps = pd.date_range(start="2023-01-01", periods=100, freq='h')
 
     event_list = pd.DataFrame({
         'timestamp': timestamps,
@@ -46,7 +46,7 @@ def generate_user_allocations():
     np.random.seed(42)  # For reproducible results
     user_ids = np.arange(1, 101)
     abgroups = np.random.choice(['A', 'B'], size=100, p=[0.5, 0.5])
-    ab_timestamps = pd.date_range(start="2022-12-15", periods=100, freq='H')
+    ab_timestamps = pd.date_range(start="2022-12-15", periods=100, freq='h')
 
     ab_test_allocations = pd.DataFrame({
         'timestamp': ab_timestamps,

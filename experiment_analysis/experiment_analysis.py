@@ -2,12 +2,15 @@ import numpy as np
 from tqdm import tqdm
 from data_generation.data_generator import generate_synthetic_data, run_analysis
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure, SubFigure
 import seaborn as sns
 import logging
 import hashlib
 import os
 from datetime import datetime, timezone
 import time
+from typing import Any, Sequence
 
 from itertools import product
 
@@ -34,9 +37,14 @@ def display_results(results):
 
 # Analyzing p_values vs num_users with fixed other parameters one by one for all combinations
 
-def analyze_feature(values_ranges, fixed_params, feature, num_iterations=50):
+def analyze_feature(
+    values_ranges: dict[str, Sequence[Any]],
+    fixed_params: dict[str, Any],
+    feature: str,
+    num_iterations: int = 50
+) -> dict[str, list[tuple[Any, float]]]:
     feature_range = values_ranges[feature]
-    results = {
+    results: dict[str, list[tuple[Any, float]]] = {
         'no_enhancement': [],
         'cuped': [],
         'gboost_cuped': []
@@ -65,7 +73,14 @@ def analyze_feature(values_ranges, fixed_params, feature, num_iterations=50):
 
     return results
 
-def plot_feature_results(results, feature, fixed_params, num_iterations, ax=None, show_histogram=False):
+def plot_feature_results(
+    results: dict[str, list[tuple[Any, float]]],
+    feature: str,
+    fixed_params: dict[str, Any],
+    num_iterations: int,
+    ax: Axes | None = None,
+    show_histogram: bool = False
+) -> Figure | SubFigure:
     sns.set(style="whitegrid")
     feature_range = [val[0] for val in results['no_enhancement']]
 
@@ -106,7 +121,13 @@ def plot_feature_results(results, feature, fixed_params, num_iterations, ax=None
     
     return fig
 
-def analyze_and_plot_features(fixed_params, varying_params, x_params, num_iterations=50, save_dir='plots'):
+def analyze_and_plot_features(
+    fixed_params: dict[str, Any],
+    varying_params: dict[str, Any],
+    x_params: dict[str, Any],
+    num_iterations: int = 50,
+    save_dir: str = 'plots'
+) -> list[str]:
     """
     Analyzes and plots features with given ranges, varying the values of specified features while keeping others fixed.
     

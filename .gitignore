@@ -158,3 +158,6 @@ data/*
 
 # Mac OS
 .DS_Store
+
+# CatBoost
+catboost_info/

@@ -4,7 +4,7 @@ import datetime
 import pandas as pd
 import numpy as np
 from ab_test_advanced_toolkit.analyzer import ABTestAnalyzer
-from typing import Tuple
+from typing import Tuple, Any
 import random
 import logging
 
@@ -17,7 +17,7 @@ folder_name = os.path.join(
 )
 os.makedirs(folder_name, exist_ok=True)
 
-def describe_dataset(df):
+def describe_dataset(df: pd.DataFrame) -> None:
     logger.debug("First 5 rows of the dataset:")
     logger.debug(df.head())
     
@@ -32,12 +32,12 @@ def describe_dataset(df):
     logger.debug(ab_means)
 
 
-def calculate_hash_1(val):
+def calculate_hash_1(val: Any) -> float:
     hash_value = int(hashlib.md5(f"{val}".encode()).hexdigest(), 16)
     residual =  (hash_value % 25) / 25
     return residual
 
-def calculate_hash_2(val):
+def calculate_hash_2(val: Any) -> float:
     hash_value = int(hashlib.sha256(f"{val}".encode()).hexdigest(), 16)
     residual = (hash_value % 25) / 25
     return residual
@@ -70,13 +70,21 @@ def generate_intermediate_in_test_value(age, engagement_score, country, platform
 
 
 
-def generate_synthetic_data(num_users=1000, alpha=0.5, countries=['US', 'UK', 'DE', 'FR', 'CA', 'AU', 'JP', 'IN'],
-                            platforms=['iOS', 'Android', 'Web', 'Desktop'], user_segments=['Segment_1', 'Segment_2', 'Segment_3', 'Segment_4'],
-                            ab_groups=['a1', 'a2', 'b'], noise_level=1.0, base_increase_percentage=0.2, seed=40):
+def generate_synthetic_data(
+    num_users: int = 1000,
+    alpha: float = 0.5,
+    countries: list[str] = ['US', 'UK', 'DE', 'FR', 'CA', 'AU', 'JP', 'IN'],
+    platforms: list[str] = ['iOS', 'Android', 'Web', 'Desktop'],
+    user_segments: list[str] = ['Segment_1', 'Segment_2', 'Segment_3', 'Segment_4'],
+    ab_groups: list[str] = ['a1', 'a2', 'b'],
+    noise_level: float = 1.0,
+    base_increase_percentage: float = 0.2,
+    seed: int = 40
+) -> pd.DataFrame:
     np.random.seed(seed)
     random.seed(seed)
     
-    data = {
+    data: dict[str, list[Any]] = {
         'userid': [],
         'country': [],
         'platform': [],

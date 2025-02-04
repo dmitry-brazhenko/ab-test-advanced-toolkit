@@ -20,12 +20,32 @@ This tool streamlines A/B testing by automatically calculating all the classic m
 pip install ab_test_advanced_toolkit
 ```
 
-or install A/B Test Advanced Toolkit directly from the source:
+### Development Setup
 
+If you want to contribute or install from source with development dependencies:
+
+1. Clone the repository and navigate to its directory:
 ```bash
 git clone https://github.com/dmitry-brazhenko/ab-test-advanced-toolkit.git
-cd ab_test_advanced_toolkit
-pip install .
+cd ab_test-advanced-toolkit
+```
+
+2. Create and activate a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Unix/macOS
+# or
+.\venv\Scripts\activate  # On Windows
+```
+
+3. Install development dependencies:
+```bash
+pip install -e ".[dev]"
+```
+
+4. Run tests to verify everything is working:
+```bash
+pytest tests/
 ```
 
 ## Data Preparation
